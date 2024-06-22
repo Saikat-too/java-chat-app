@@ -7,35 +7,35 @@ This is a simple Java-based chat application consisting of a server (`ChatServer
 
 ### Running the `ChatServer`
 
-1. **Compile the Server**: Navigate to the `ChatServer` directory and compile the Java file:
+1. Compile the Server: Navigate to the `ChatServer` directory and compile the Java file:
    ```bash
    javac ChatServer.java
    ```
 
-2. **Run the Server**: Start the `ChatServer` application:
+2. Run the Server: Start the `ChatServer` application:
    ```bash
    java ChatServer
    ```
    This will launch the server GUI.
 
-3. **Server Interface**:
+3. Server Interface:
    - Enter a username and click `Connect`.
    - Manage connected clients, view messages, and handle commands.
 
 ### Running the `ChatClient`
 
-1. **Compile the Client**: Navigate to the `ChatClient` directory and compile the Java file:
+1. Compile the Client: Navigate to the `ChatClient` directory and compile the Java file:
    ```bash
    javac ChatClient.java
    ```
 
-2. **Run the Client**: Start the `ChatClient` application:
+2. Run the Client: Start the `ChatClient` application:
    ```bash
    java ChatClient
    ```
    This will prompt you to enter the server address.
 
-3. **Client Interface**:
+3. Client Interface:
    - Enter the server address (e.g., `127.0.0.1` for local testing).
    - Enter a username and start chatting.
    - Send messages, use emojis, and execute commands as needed.
@@ -56,11 +56,3 @@ This is a simple Java-based chat application consisting of a server (`ChatServer
 - Joining a group: `/group join developers`
 - Sending a group message: `/group msg developers Let's discuss the project.`
 
-## Notes
-
-- Emojis can be sent as part of regular messages by typing them directly into the message field.
-- Ensure proper network connectivity and firewall settings for client-server communication, especially in remote setups.
-
----
-
-This `README.md` provides comprehensive instructions on setting up, running, and using the Java chat application (`ChatServer` and `ChatClient`). It covers basic commands, features, and requirements necessary for a smooth deployment and usage experience. Adjust paths and specific details based on your project structure and environment.
