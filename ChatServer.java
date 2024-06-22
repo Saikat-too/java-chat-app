@@ -7,11 +7,7 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import javax.swing.*;
 
 public class ChatServer {
@@ -19,6 +15,7 @@ public class ChatServer {
     private ServerSocket server;
     private Set<ClientHandler> clientHandlers;
     private Map<String, ClientHandler> clients;
+    private Map<String, Set<ClientHandler>> groups;
 
     private JFrame frame;
     private JTextArea chatArea;
@@ -29,6 +26,7 @@ public class ChatServer {
     public ChatServer() {
         clientHandlers = new HashSet<>();
         clients = new HashMap<>();
+        groups = new HashMap<>();
         initializeUI();
         startServer();
     }
@@ -215,10 +213,72 @@ public class ChatServer {
         private void handleCommand(String command) {
             if (command.equals("/list")) {
                 sendMessage("[UserList] " + String.join(", ", clients.keySet()));
+            } else if (command.startsWith("/group")) {
+                handleGroupCommand(command);
             } else if (command.equals("/help")) {
-                sendMessage("[Help] Available commands: /list, /help, @username message");
+                sendMessage("[Help] Available commands: /list, /help, @username message, /group create|join|leave|msg groupname message");
             } else {
                 sendMessage("Unknown command: " + command);
+            }
+        }
+
+        private void handleGroupCommand(String command) {
+            String[] tokens = command.split(" ", 4);
+            if (tokens.length < 2) {
+                sendMessage("Invalid group command format.");
+                return;
+            }
+
+            String action = tokens[1];
+            String groupName = tokens.length > 2 ? tokens[2] : null;
+            String groupMessage = tokens.length > 3 ? tokens[3] : null;
+
+            switch (action) {
+                case "create":
+                    if (groupName != null && !groups.containsKey(groupName)) {
+                        groups.put(groupName, new HashSet<>(Collections.singleton(this)));
+                        sendMessage("Group " + groupName + " created.");
+                    } else {
+                        sendMessage("Group name is invalid or already exists.");
+                    }
+                    break;
+                case "join":
+                    if (groupName != null && groups.containsKey(groupName)) {
+                        groups.get(groupName).add(this);
+                        sendMessage("Joined group " + groupName);
+                    } else {
+                        sendMessage("Group name is invalid or does not exist.");
+                    }
+                    break;
+                case "leave":
+                    if (groupName != null && groups.containsKey(groupName)) {
+                        groups.get(groupName).remove(this);
+                        sendMessage("Left group " + groupName);
+                    } else {
+                        sendMessage("Group name is invalid or does not exist.");
+                    }
+                    break;
+                case "msg":
+                    if (groupName != null && groupMessage != null && groups.containsKey(groupName)) {
+                        sendGroupMessage(groupName, groupMessage);
+                    } else {
+                        sendMessage("Invalid group message format or group does not exist.");
+                    }
+                    break;
+                default:
+                    sendMessage("Unknown group command action: " + action);
+                    break;
+            }
+        }
+
+        private void sendGroupMessage(String groupName, String message) {
+            Set<ClientHandler> groupMembers = groups.get(groupName);
+            if (groupMembers != null) {
+                for (ClientHandler member : groupMembers) {
+                    member.sendMessage("[Group " + groupName + "] " + clientUsername + ": " + message);
+                }
+            } else {
+                sendMessage("Group does not exist.");
             }
         }
 
